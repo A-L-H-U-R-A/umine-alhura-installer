@@ -6,10 +6,10 @@
 
 [Setup]
 
-AppId={{UmineAlhura-Voicebank-1.02}
-AppName=海音アルラ Umine Alhura
-AppVersion=1.02
-AppVerName=海音アルラ Umine Alhura Ver.1.02
+AppId={{UmineAlhura-Voicebank-1.0.0}
+AppName=Umine Alhura Installer
+AppVersion=1.0.0
+AppVerName=Umine Alhura Installer
 
 AppPublisher=Alhura Driftveil
 AppPublisherURL=https://github.com/A-L-H-U-R-A
@@ -24,7 +24,7 @@ DisableDirPage=yes
 DisableProgramGroupPage=yes
 
 OutputDir=Output
-OutputBaseFilename=UmineAlhura-1.02-Setup
+OutputBaseFilename=UmineAlhura-1.0.0-Setup
 
 Compression=lzma2
 SolidCompression=yes
@@ -213,10 +213,8 @@ var
   IntroInfo: TNewStaticText;
 
   VoicebankTitle: TNewStaticText;
-  VoicebankInfo: TNewStaticText;
 
   InstallTitle: TNewStaticText;
-  InstallInfo: TNewStaticText;
 
   OpenUtauRadio: TNewRadioButton;
   UtauRadio: TNewRadioButton;
@@ -317,13 +315,23 @@ begin
   Result.Width := ScaleX(WidthPos);
   Result.Height := ScaleY(HeightPos);
 
+  { EL ORDEN IMPORTA: TNewStaticText nace con AutoSize=True, así que
+    mientras WordWrap siga en False, asignar el Caption hace que el
+    control se autosize al ancho COMPLETO del texto. La etiqueta se
+    sale de la página y lo único que se ve es el texto cortado en el
+    borde derecho.
+
+    Con WordWrap=True ANTES del Caption, AdjustBounds conserva el
+    ancho que le pasamos y calcula solo el ALTO del texto, ya
+    envuelto en varias líneas dentro de la columna de contenido. }
+  Result.WordWrap := True;
+
   Result.Caption := CaptionText;
 
   Result.Font.Size := FontSize;
 
-  { Sin esto, un texto más largo que WidthPos no se envuelve
-    y termina saliéndose del control o de la página. }
-  Result.WordWrap := True;
+  { Congela el tamaño calculado: ancho fijo (columna de contenido) y
+    alto ajustado al texto envuelto. }
   Result.AutoSize := False;
 end;
 
@@ -543,19 +551,6 @@ begin
 
   VoicebankTitle.Alignment := taCenter;
 
-  VoicebankInfo := CreateLabel(
-    VoicebankPage.Surface,
-    'CVVC (Ver.1.00) is the new default and already includes its artwork.' + #13#10 +
-    'The classic CV (Ver.1.02) is optional and can be installed alongside it.',
-    ContentLeft,
-    46,
-    AvailWidth,
-    35,
-    9
-  );
-
-  VoicebankInfo.Alignment := taCenter;
-
   CvvcCheck := CreateOptionCheck(
     VoicebankPage.Surface,
     'Install CVVC — Ver.1.00 (default)',
@@ -637,19 +632,6 @@ begin
   );
 
   InstallTitle.Alignment := taCenter;
-
-  InstallInfo := CreateLabel(
-    InstallPage.Surface,
-    'One folder per selected version is created inside the base folder.' + #13#10 +
-    'Choose one of the standard locations or select a custom folder.',
-    ContentLeft,
-    42,
-    AvailWidth,
-    35,
-    9
-  );
-
-  InstallInfo.Alignment := taCenter;
 
 
   OpenUtauRadio := TNewRadioButton.Create(InstallPage);
